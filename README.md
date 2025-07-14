@@ -39,7 +39,18 @@ The program prints `20`.
 
 ## 2. Practical Work and Customisation
 
-The language now supports variable declarations, assignments, arithmetic, comparison operators, `if`/`else` and `while` loops. All language features are implemented in `lexer.cpp`, `parser.cpp` and `vm.cpp`. You can extend them to add Python-like functionality such as more data types or user defined functions.
+The language now supports variable declarations, assignments, arithmetic, comparison operators, `if`/`else`, `while` loops and user defined functions. A function is declared with `fn`:
+
+```text
+fn add(a, b) {
+    return a + b;
+}
+
+let result = add(2, 3);
+print result;
+```
+
+All language features are implemented in `lexer.cpp`, `parser.cpp` and `vm.cpp`. You can further extend them to add Python-like data types such as lists.
 
 To modify the language:
 1. Edit **lexer.cpp** to recognise new keywords or symbols.

@@ -20,13 +20,26 @@ enum class OpCode {
     CMP_GT,
     CMP_GE,
     JMP,
-    JMP_IF_FALSE
+    JMP_IF_FALSE,
+    CALL,
+    RET,
+    POP
 };
 
 struct Instruction {
     OpCode op;
-    std::string text; // variable name or number as string
-    int arg = 0;      // used for jump targets
+    std::string text; // variable name, number or function name
+    int arg = 0;      // jump targets or argument count
 };
 
-std::vector<Instruction> parse(const std::vector<Token>& tokens);
+struct Function {
+    size_t address;
+    std::vector<std::string> params;
+};
+
+struct Program {
+    std::vector<Instruction> code;
+    std::unordered_map<std::string, Function> functions;
+};
+
+Program parse(const std::vector<Token>& tokens);

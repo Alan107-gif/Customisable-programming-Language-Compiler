@@ -18,8 +18,8 @@ int main(int argc, char** argv) {
     std::stringstream buffer;
     buffer << in.rdbuf();
     auto tokens = lex(buffer.str());
-    auto code = parse(tokens);
+    Program prog = parse(tokens);
     VM vm;
-    vm.run(code);
+    vm.run(prog);
     return 0;
 }

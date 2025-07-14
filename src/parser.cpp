@@ -7,6 +7,7 @@ struct Parser {
     size_t pos = 0;
     std::vector<Instruction> code;
     std::unordered_map<std::string, int> vars; // for variable existence
+    std::unordered_map<std::string, Function> functions;
 
     Parser(const std::vector<Token>& t) : tokens(t) {}
 
@@ -20,7 +21,11 @@ struct Parser {
 
     void parseProgram() {
         while (peek().type != TokenType::End) {
-            parseStatement();
+            if (peek().type == TokenType::Fn) {
+                parseFunction();
+            } else {
+                parseStatement();
+            }
         }
     }
 
@@ -39,12 +44,20 @@ struct Parser {
             parseExpression();
             expect(TokenType::Semicolon);
             code.push_back({OpCode::PRINT, ""});
+        } else if (match(TokenType::Return)) {
+            parseExpression();
+            expect(TokenType::Semicolon);
+            code.push_back({OpCode::RET, ""});
         } else if (peek().type == TokenType::Identifier && pos + 1 < tokens.size() && tokens[pos+1].type == TokenType::Equal) {
             std::string name = advance().text; // identifier
             advance(); // '='
             parseExpression();
             expect(TokenType::Semicolon);
             code.push_back({OpCode::STORE_VAR, name});
+        } else if (peek().type == TokenType::Identifier && pos + 1 < tokens.size() && tokens[pos+1].type == TokenType::LParen) {
+            parseExpression();
+            expect(TokenType::Semicolon);
+            code.push_back({OpCode::POP, ""});
         } else {
             throw std::runtime_error("Expected statement");
         }
@@ -91,6 +104,31 @@ struct Parser {
         parseBlock();
         code.push_back({OpCode::JMP, "", static_cast<int>(loopStart)});
         patchJump(jmpIfIndex, code.size());
+    }
+
+    void parseFunction() {
+        expect(TokenType::Fn);
+        std::string name = expect(TokenType::Identifier).text;
+        expect(TokenType::LParen);
+        std::vector<std::string> params;
+        if (!match(TokenType::RParen)) {
+            do {
+                params.push_back(expect(TokenType::Identifier).text);
+            } while (match(TokenType::Comma));
+            expect(TokenType::RParen);
+        }
+        expect(TokenType::LBrace);
+        size_t jmpIndex = code.size();
+        code.push_back({OpCode::JMP, "", 0});
+        size_t start = code.size();
+        auto oldVars = vars;
+        for (const auto& p : params) vars[p] = 1;
+        parseBlock();
+        if (code.empty() || code.back().op != OpCode::RET)
+            code.push_back({OpCode::RET, ""});
+        vars = oldVars;
+        functions[name] = Function{start, params};
+        code[jmpIndex].arg = static_cast<int>(code.size());
     }
 
     Token expect(TokenType type) {
@@ -171,7 +209,12 @@ struct Parser {
         if (match(TokenType::Number)) {
             code.push_back({OpCode::PUSH_CONST, tokens[pos-1].text});
         } else if (match(TokenType::Identifier)) {
-            code.push_back({OpCode::LOAD_VAR, tokens[pos-1].text});
+            std::string name = tokens[pos-1].text;
+            if (match(TokenType::LParen)) {
+                parseArguments(name);
+            } else {
+                code.push_back({OpCode::LOAD_VAR, name});
+            }
         } else if (match(TokenType::LParen)) {
             parseExpression();
             expect(TokenType::RParen);
@@ -179,11 +222,26 @@ struct Parser {
             throw std::runtime_error("Expected expression");
         }
     }
+
+    void parseArguments(const std::string& fname) {
+        int count = 0;
+        if (!match(TokenType::RParen)) {
+            do {
+                parseExpression();
+                ++count;
+            } while (match(TokenType::Comma));
+            expect(TokenType::RParen);
+        }
+        code.push_back({OpCode::CALL, fname, count});
+    }
 };
 } // namespace
 
-std::vector<Instruction> parse(const std::vector<Token>& tokens) {
+Program parse(const std::vector<Token>& tokens) {
     Parser p(tokens);
     p.parseProgram();
-    return p.code;
+    Program prog;
+    prog.code = std::move(p.code);
+    prog.functions = std::move(p.functions);
+    return prog;
 }

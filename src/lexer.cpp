@@ -22,6 +22,8 @@ std::vector<Token> lex(const std::string& source) {
             else if (text == "if") type = TokenType::If;
             else if (text == "else") type = TokenType::Else;
             else if (text == "while") type = TokenType::While;
+            else if (text == "fn") type = TokenType::Fn;
+            else if (text == "return") type = TokenType::Return;
             tokens.push_back({type, text});
             continue;
         }
@@ -58,6 +60,7 @@ std::vector<Token> lex(const std::string& source) {
             case ';': tokens.push_back({TokenType::Semicolon, ";"}); break;
             case '(': tokens.push_back({TokenType::LParen, "("}); break;
             case ')': tokens.push_back({TokenType::RParen, ")"}); break;
+            case ',': tokens.push_back({TokenType::Comma, ","}); break;
             default: throw std::runtime_error(std::string("Unexpected character: ") + c);
         }
         ++i;

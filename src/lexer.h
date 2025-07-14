@@ -11,6 +11,8 @@ enum class TokenType {
     If,
     Else,
     While,
+    Fn,
+    Return,
     Plus,
     Minus,
     Star,
@@ -26,7 +28,8 @@ enum class TokenType {
     LParen,
     RParen,
     LBrace,
-    RBrace
+    RBrace,
+    Comma
 };
 
 struct Token {

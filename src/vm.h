@@ -6,8 +6,9 @@
 
 class VM {
 public:
-    void run(const std::vector<Instruction>& code);
+    void run(const Program& program);
 private:
     std::vector<int> stack;
-    std::unordered_map<std::string,int> vars;
+    std::vector<std::unordered_map<std::string,int>> env;
+    std::unordered_map<std::string, Function> functions;
 };
