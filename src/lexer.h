@@ -8,14 +8,25 @@ enum class TokenType {
     Number,
     Let,
     Print,
+    If,
+    Else,
+    While,
     Plus,
     Minus,
     Star,
     Slash,
     Equal,
+    EqualEqual,
+    BangEqual,
+    Greater,
+    GreaterEqual,
+    Less,
+    LessEqual,
     Semicolon,
     LParen,
-    RParen
+    RParen,
+    LBrace,
+    RBrace
 };
 
 struct Token {

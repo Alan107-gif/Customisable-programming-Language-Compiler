@@ -19,6 +19,9 @@ std::vector<Token> lex(const std::string& source) {
             TokenType type = TokenType::Identifier;
             if (text == "let") type = TokenType::Let;
             else if (text == "print") type = TokenType::Print;
+            else if (text == "if") type = TokenType::If;
+            else if (text == "else") type = TokenType::Else;
+            else if (text == "while") type = TokenType::While;
             tokens.push_back({type, text});
             continue;
         }
@@ -34,7 +37,24 @@ std::vector<Token> lex(const std::string& source) {
             case '-': tokens.push_back({TokenType::Minus, "-"}); break;
             case '*': tokens.push_back({TokenType::Star, "*"}); break;
             case '/': tokens.push_back({TokenType::Slash, "/"}); break;
-            case '=': tokens.push_back({TokenType::Equal, "="}); break;
+            case '=':
+                if (i + 1 < source.size() && source[i+1] == '=') { tokens.push_back({TokenType::EqualEqual, "=="}); ++i; }
+                else tokens.push_back({TokenType::Equal, "="});
+                break;
+            case '!':
+                if (i + 1 < source.size() && source[i+1] == '=') { tokens.push_back({TokenType::BangEqual, "!="}); ++i; }
+                else throw std::runtime_error("Unexpected character: !");
+                break;
+            case '>':
+                if (i + 1 < source.size() && source[i+1] == '=') { tokens.push_back({TokenType::GreaterEqual, ">="}); ++i; }
+                else tokens.push_back({TokenType::Greater, ">"});
+                break;
+            case '<':
+                if (i + 1 < source.size() && source[i+1] == '=') { tokens.push_back({TokenType::LessEqual, "<="}); ++i; }
+                else tokens.push_back({TokenType::Less, "<"});
+                break;
+            case '{': tokens.push_back({TokenType::LBrace, "{"}); break;
+            case '}': tokens.push_back({TokenType::RBrace, "}"}); break;
             case ';': tokens.push_back({TokenType::Semicolon, ";"}); break;
             case '(': tokens.push_back({TokenType::LParen, "("}); break;
             case ')': tokens.push_back({TokenType::RParen, ")"}); break;

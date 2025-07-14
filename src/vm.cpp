@@ -45,6 +45,44 @@ void VM::run(const std::vector<Instruction>& code) {
                 std::cout << stack.back() << std::endl;
                 stack.pop_back();
                 break;
+            case OpCode::CMP_EQ:
+                if (stack.size() < 2) throw std::runtime_error("Stack underflow");
+                stack[stack.size()-2] = (stack[stack.size()-2] == stack.back());
+                stack.pop_back();
+                break;
+            case OpCode::CMP_NEQ:
+                if (stack.size() < 2) throw std::runtime_error("Stack underflow");
+                stack[stack.size()-2] = (stack[stack.size()-2] != stack.back());
+                stack.pop_back();
+                break;
+            case OpCode::CMP_LT:
+                if (stack.size() < 2) throw std::runtime_error("Stack underflow");
+                stack[stack.size()-2] = (stack[stack.size()-2] < stack.back());
+                stack.pop_back();
+                break;
+            case OpCode::CMP_LE:
+                if (stack.size() < 2) throw std::runtime_error("Stack underflow");
+                stack[stack.size()-2] = (stack[stack.size()-2] <= stack.back());
+                stack.pop_back();
+                break;
+            case OpCode::CMP_GT:
+                if (stack.size() < 2) throw std::runtime_error("Stack underflow");
+                stack[stack.size()-2] = (stack[stack.size()-2] > stack.back());
+                stack.pop_back();
+                break;
+            case OpCode::CMP_GE:
+                if (stack.size() < 2) throw std::runtime_error("Stack underflow");
+                stack[stack.size()-2] = (stack[stack.size()-2] >= stack.back());
+                stack.pop_back();
+                break;
+            case OpCode::JMP:
+                ip = inst.arg - 1;
+                break;
+            case OpCode::JMP_IF_FALSE:
+                if (stack.empty()) throw std::runtime_error("Stack underflow");
+                if (!stack.back()) ip = inst.arg - 1;
+                stack.pop_back();
+                break;
         }
     }
 }

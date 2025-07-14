@@ -1,24 +1,12 @@
 # Customisable Programming Language Compiler
 
-This repository contains a minimal example of a compiler for a very
-small, customisable programming language. The code is written in C++ and
-uses a simple lexer, parser and bytecode interpreter. It demonstrates
-how a custom language can be compiled and executed on both Linux and
-Windows using standard build tools.
+This project contains a comfortable yet small compiler for a toy programming language. It demonstrates how to build and run a custom language on Linux and Windows.
 
-## Features
+## 1. Installing and Using
 
-- Variable declarations using `let`
-- Integer arithmetic with `+`, `-`, `*`, `/`
-- Print statements
-- Cross platform build via CMake
+### Building
 
-The implementation is intentionally small but can be extended with more
-language features such as conditionals, loops or additional data types.
-
-## Building
-
-### Linux
+#### Linux
 ```bash
 mkdir build
 cd build
@@ -26,37 +14,40 @@ cmake ..
 make
 ```
 
-### Windows (with CMake and a compiler like MSVC or MinGW)
+#### Windows
 ```cmd
 mkdir build
 cd build
-cmake .. -G "Visual Studio 17 2022"   # choose a generator available on your system
+cmake .. -G "Visual Studio 17 2022"  # or another generator
 cmake --build .
 ```
 
-After building, the executable `cplc` (or `cplc.exe` on Windows) can be
-used to compile and run `.cpl` source files.
+The build will produce an executable `cplc` (or `cplc.exe` on Windows). You can rename the file to any extension such as `.x` or `.xxx` to suit your workflow – on Linux any executable name will run.
 
-## Usage
-Create a file `example.cpl` with the following contents:
+### Running
+Create a file `example.cpl`:
 ```text
 let x = 10;
-let y = x * 2 + 5;
+let y = x * 2;
 print y;
 ```
-Run the compiler:
+Run:
 ```bash
 ./cplc example.cpl
 ```
-The program will print `25`.
+The program prints `20`.
 
-## Hardware Adaptation
-The current implementation compiles natively for the host CPU using the
-system compiler. No architecture-specific optimisation is performed yet.
-Further work could add more advanced optimisations and native code
-generation.
+## 2. Practical Work and Customisation
 
-## Questions
-- Which advanced language features would you like to see added?
-- Should the compiler eventually emit native code instead of running in
-a virtual machine?
+The language now supports variable declarations, assignments, arithmetic, comparison operators, `if`/`else` and `while` loops. All language features are implemented in `lexer.cpp`, `parser.cpp` and `vm.cpp`. You can extend them to add Python-like functionality such as more data types or user defined functions.
+
+To modify the language:
+1. Edit **lexer.cpp** to recognise new keywords or symbols.
+2. Update **parser.cpp** to emit bytecode for new constructs.
+3. Implement behaviour in **vm.cpp**.
+
+Because the compiler produces standard native executables via CMake, you may tune compilation flags or rename the resulting binary to match any extension. Further work could add optimisation passes and native code generation.
+
+Questions for future work:
+- Which additional high level features (functions, lists, etc.) would be most useful?
+- Would integrating a just-in-time backend improve performance?

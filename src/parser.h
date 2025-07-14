@@ -12,12 +12,21 @@ enum class OpCode {
     SUB,
     MUL,
     DIV,
-    PRINT
+    PRINT,
+    CMP_EQ,
+    CMP_NEQ,
+    CMP_LT,
+    CMP_LE,
+    CMP_GT,
+    CMP_GE,
+    JMP,
+    JMP_IF_FALSE
 };
 
 struct Instruction {
     OpCode op;
     std::string text; // variable name or number as string
+    int arg = 0;      // used for jump targets
 };
 
 std::vector<Instruction> parse(const std::vector<Token>& tokens);
